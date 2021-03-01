@@ -27,6 +27,22 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# guardian configuration
+config :management, Management.Authentication.Guardian,
+  issuer: "writing",
+  secret_key: "e1YbUhS4A1lcZOUKQU/RoXYTohYSroBPVG4oGQmukIxrIsKzkci1kKf940Z92eRb",
+  verify_issuer: true
+
+config :guardian, Guardian.DB,
+  # Add your repository module
+  repo: Management.Repo,
+  # default
+  schema_name: "guardian_tokens",
+  # store all token types if not set
+  # token_types: ["refresh_token"], => Commenting this line out allows for the storing of all session
+  # default: 60 minutes
+  sweep_interval: 60
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
