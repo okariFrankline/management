@@ -1,0 +1,67 @@
+<h1>Show Account</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, ManagementWeb.AccountLive.FormComponent,
+    id: @account.id,
+    title: @page_title,
+    action: @live_action,
+    account: @account,
+    return_to: Routes.account_show_path(@socket, :show, @account) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Email:</strong>
+    <%= @account.email %>
+  </li>
+
+  <li>
+    <strong>Password hash:</strong>
+    <%= @account.password_hash %>
+  </li>
+
+  <li>
+    <strong>Account type:</strong>
+    <%= @account.account_type %>
+  </li>
+
+  <li>
+    <strong>Is active:</strong>
+    <%= @account.is_active %>
+  </li>
+
+  <li>
+    <strong>Is suspended:</strong>
+    <%= @account.is_suspended %>
+  </li>
+
+  <li>
+    <strong>Confirmed at:</strong>
+    <%= @account.confirmed_at %>
+  </li>
+
+  <li>
+    <strong>Password hash:</strong>
+    <%= @account.password_hash %>
+  </li>
+
+  <li>
+    <strong>Account role:</strong>
+    <%= @account.account_role %>
+  </li>
+
+  <li>
+    <strong>Subscription start date:</strong>
+    <%= @account.subscription_start_date %>
+  </li>
+
+  <li>
+    <strong>Subscription end date:</strong>
+    <%= @account.subscription_end_date %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.account_show_path(@socket, :edit, @account), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.account_index_path(@socket, :index) %></span>
