@@ -49,7 +49,9 @@ defmodule Management.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:argon2_elixir, "~> 2.4"},
       {:guardian, "~> 2.1"},
-      {:guardian_db, "~> 2.1"}
+      {:guardian_db, "~> 2.1"},
+      {:faker, "~> 0.16.0", only: :test},
+      {:ex_machina, "~> 2.6", only: :test}
     ]
   end
 

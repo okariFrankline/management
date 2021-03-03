@@ -8,10 +8,12 @@ defmodule Management.AccountManager.Account.Utils do
   def validate_email(changeset) do
     if changeset.valid? do
       changeset
-      |> validate_required([
-        :email,
+      |> validate_required(
+        [
+          :email
+        ],
         message: "Email Address is required to create a new account."
-      ])
+      )
       |> validate_format(
         :email,
         ~r/^[^\s]+@[^\s]+$/,
@@ -24,7 +26,7 @@ defmodule Management.AccountManager.Account.Utils do
       # unsafe validate unique allows for fast feedback to the user.
       # however, since it is unsafe, it should be used with unique constraint as failure to do so may lead
       # to race conditions.
-      |> unsafe_validate_unique(:email, Auth.Repo)
+      # |> unsafe_validate_unique(:email, Management.Repo)
       |> unique_constraint(
         :email,
         message: "The email entered is already in use."
@@ -38,10 +40,13 @@ defmodule Management.AccountManager.Account.Utils do
   def validate_password(%Ecto.Changeset{} = changeset) do
     if changeset.valid? do
       changeset
-      |> validate_required([
-        :password,
-        message: "New Password is required."
-      ])
+      |> validate_required(
+        [
+          :password,
+          :password_confirmation
+        ],
+        message: "New Password and Password confirmation are required."
+      )
       |> validate_length(
         :password,
         min: 8,
@@ -66,6 +71,7 @@ defmodule Management.AccountManager.Account.Utils do
       changeset
       |> put_change(:password_hash, Argon2.hash_pwd_salt(password))
       |> delete_change(:password)
+      |> delete_change(:password_confirmation)
     else
       changeset
     end

@@ -18,7 +18,7 @@ defmodule Management.AccountManager.Account do
   @foreign_key_type :binary_id
   schema "accounts" do
     field :email, :string, unique: true
-    field :account_type, :string, default: "Management Account"
+    field :account_type, :string
     # confirmed at indicates the date and time that the account was activated
     # it will be used to ensure that the account has been activated as it is set to nil when
     # the account has not been created.
@@ -27,6 +27,7 @@ defmodule Management.AccountManager.Account do
     field :is_suspended, :boolean, default: false
     field :password_hash, :string
     field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
 
     timestamps()
   end
@@ -38,7 +39,8 @@ defmodule Management.AccountManager.Account do
     |> cast(attrs, [
       :email,
       :account_type,
-      :password
+      :password,
+      :password_confirmation
     ])
   end
 
@@ -50,8 +52,10 @@ defmodule Management.AccountManager.Account do
     |> cast(attrs, [
       :email,
       :password,
-      :account_type
+      :account_type,
+      :password_confirmation
     ])
+    |> validate_required([:account_type])
     |> Utils.validate_email()
     |> Utils.validate_password()
     |> Utils.hash_password()
