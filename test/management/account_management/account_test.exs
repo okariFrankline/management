@@ -6,7 +6,7 @@ defmodule Management.AccountManager.AccountTest do
     {:id, :binary_id},
     {:email, :string},
     {:account_type, :string},
-    {:confirmed_at, :utc_datetime},
+    {:confirmed_at, :naive_datetime},
     {:is_active, :boolean},
     {:is_suspended, :boolean},
     {:password_hash, :string},

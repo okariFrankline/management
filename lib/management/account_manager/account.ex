@@ -10,24 +10,24 @@ defmodule Management.AccountManager.Account do
   use Ecto.Schema
   import Ecto.Changeset
   alias __MODULE__.Utils
-  alias Management.Types
+  alias Management.{Types, Repo}
 
   @type t :: %__MODULE__{}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "accounts" do
-    field :email, :string, unique: true
-    field :account_type, :string
+    field(:email, :string, unique: true)
+    field(:account_type, :string)
     # confirmed at indicates the date and time that the account was activated
     # it will be used to ensure that the account has been activated as it is set to nil when
     # the account has not been created.
-    field :confirmed_at, :utc_datetime, default: nil
-    field :is_active, :boolean, default: false
-    field :is_suspended, :boolean, default: false
-    field :password_hash, :string
-    field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true
+    field(:confirmed_at, :naive_datetime, default: nil)
+    field(:is_active, :boolean, default: false)
+    field(:is_suspended, :boolean, default: false)
+    field(:password_hash, :string)
+    field(:password, :string, virtual: true)
+    field(:password_confirmation, :string, virtual: true)
 
     timestamps()
   end
@@ -67,8 +67,44 @@ defmodule Management.AccountManager.Account do
     account
     |> change(attrs)
     |> cast(attrs, [
-      :password
+      :password,
+      :password_confirmation
     ])
     |> Utils.validate_password()
+    |> Utils.hash_password()
+  end
+
+  @doc false
+  @spec confrim_changeset(t()) :: Ecto.Changeset.t()
+  def confrim_changeset(account) do
+    now =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.truncate(:second)
+
+    account
+    |> change(%{
+      confrimed_at: now,
+      is_active: true
+    })
+  end
+
+  # implemente the bamboo formatter for the account
+  defimpl Bamboo.Formatter do
+    def format_email_address(%Account{email: email} = account, _opts) do
+      # get the account owner
+      account_owner =
+        account
+        |> Utils.account_owner_query()
+        |> elem(1)
+        |> select([owner], %{
+          first_name: owner.first_name,
+          last_name: owner.last_name
+        })
+        |> Repo.one()
+
+      full_name = "#{account.last_name} #{account.first_name}"
+
+      {full_name, email}
+    end
   end
 end

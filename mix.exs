@@ -50,6 +50,8 @@ defmodule Management.MixProject do
       {:argon2_elixir, "~> 2.4"},
       {:guardian, "~> 2.1"},
       {:guardian_db, "~> 2.1"},
+      {:bamboo, github: "thoughtbot/bamboo", override: true},
+      {:bamboo_phoenix, "~> 1.0"},
       {:faker, "~> 0.16.0", only: :test},
       {:ex_machina, "~> 2.6", only: :test}
     ]

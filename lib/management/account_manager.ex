@@ -9,6 +9,22 @@ defmodule Management.AccountManager do
   alias Management.AccountManager.Account
 
   @doc """
+  Gets an account by email.
+
+  ## Examples
+
+      iex> get_account_by_email("foo@example.com")
+      %User{}
+
+      iex> get_account_by_email("unknown@example.com")
+      nil
+
+  """
+  def get_account_by_email(email) when is_binary(email) do
+    Repo.get_by(Account, email: email)
+  end
+
+  @doc """
   Returns the list of accounts.
 
   ## Examples
@@ -51,7 +67,7 @@ defmodule Management.AccountManager do
   """
   def create_account(attrs \\ %{}) do
     %Account{}
-    |> Account.changeset(attrs)
+    |> Account.creation_changeset(attrs)
     |> Repo.insert()
   end
 

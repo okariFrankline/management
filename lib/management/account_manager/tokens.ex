@@ -14,21 +14,21 @@ defmodule Management.AccountManager.Token do
   @hash_algorithm :sha256
   @rand_size 32
   @reset_password_validity_in_days 1
-  @confirm_validity_in_days 7
+  @confirm_validity_in_days 1a
   @change_email_validity_in_days 7
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "tokens" do
     # the actual token generated for the purposes of
-    field :token, :binary
+    field(:token, :binary)
     # context explains why the session was generated.
-    field :context, :string
+    field(:context, :string)
     # the account's email where the session was sent to
-    field :sent_to, :string
+    field(:sent_to, :string)
 
     # a single user can have a number of tokens
-    belongs_to :account, Account, type: :binary
+    belongs_to(:account, Account, type: :binary_id)
 
     timestamps(updated_at: false)
   end
@@ -150,6 +150,6 @@ defmodule Management.AccountManager.Token do
     )
   end
 
-  defp days_for_context("confirm"), do: @confirm_validity_in_days
+  defp days_for_context("Account Confirmation"), do: @confirm_validity_in_days
   defp days_for_context("reset_password"), do: @reset_password_validity_in_days
 end

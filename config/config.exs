@@ -8,8 +8,11 @@
 use Mix.Config
 
 config :management,
+  # Name of the entire application
+  app_name: "Sotoo",
   ecto_repos: [Management.Repo],
-  generators: [binary_id: true]
+  generators: [binary_id: true],
+  bamboo_from_email: "okarifrankline5678@gmail.com"
 
 # Configures the endpoint
 config :management, ManagementWeb.Endpoint,

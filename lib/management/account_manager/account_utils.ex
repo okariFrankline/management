@@ -1,8 +1,11 @@
 defmodule Management.AccountManager.Account.Utils do
   @moduledoc false
-
-  alias Management.Types
   import Ecto.Changeset
+  import Ecto.Query, warn: false
+
+  alias Management.WriterManager.WriterProfile
+  alias Management.ManagementManager.ManagementProfile
+  alias Management.Types
 
   @spec validate_email(Types.ecto()) :: Types.ecto()
   def validate_email(changeset) do
@@ -75,5 +78,32 @@ defmodule Management.AccountManager.Account.Utils do
     else
       changeset
     end
+  end
+
+  @doc """
+  Returns the query for getting the account owner for a given account
+
+  ## Example
+     iex> account_owner_query(account)
+     {:ok, %Ecto.Query{}}
+  """
+  @spec account_owner_query() :: {:ok, Ecto.Query.t()}
+  def account_owner_query(%Account{account_type: account_type, id: id}) do
+    query =
+      case account_type do
+        "Management Account" ->
+          from(
+            owner in ManagementProfile,
+            where: owner.account_id == ^id
+          )
+
+        "Writer Account" ->
+          from(
+            owner in WriterProfile,
+            where: owner.account_id == ^id
+          )
+      end
+
+    {:ok, query}
   end
 end
