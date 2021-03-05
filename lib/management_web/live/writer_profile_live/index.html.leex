@@ -1,0 +1,49 @@
+<h1>Listing Writer profiles</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, ManagementWeb.WriterProfileLive.FormComponent,
+    id: @writer_profile.id || :new,
+    title: @page_title,
+    action: @live_action,
+    writer_profile: @writer_profile,
+    return_to: Routes.writer_profile_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>First name</th>
+      <th>Last name</th>
+      <th>Gender</th>
+      <th>Suscription type</th>
+      <th>Profile image</th>
+      <th>Sub expiry date</th>
+      <th>Sub start date</th>
+      <th>Full name</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="writer_profiles">
+    <%= for writer_profile <- @writer_profiles do %>
+      <tr id="writer_profile-<%= writer_profile.id %>">
+        <td><%= writer_profile.first_name %></td>
+        <td><%= writer_profile.last_name %></td>
+        <td><%= writer_profile.gender %></td>
+        <td><%= writer_profile.suscription_type %></td>
+        <td><%= writer_profile.profile_image %></td>
+        <td><%= writer_profile.sub_expiry_date %></td>
+        <td><%= writer_profile.sub_start_date %></td>
+        <td><%= writer_profile.full_name %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.writer_profile_show_path(@socket, :show, writer_profile) %></span>
+          <span><%= live_patch "Edit", to: Routes.writer_profile_index_path(@socket, :edit, writer_profile) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: writer_profile.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Writer profile", to: Routes.writer_profile_index_path(@socket, :new) %></span>

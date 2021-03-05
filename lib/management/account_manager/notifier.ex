@@ -2,8 +2,8 @@ defmodule Management.AccountManager.Notifier do
   @moduledoc """
   Module responsible for sending an email about account management
   """
-  use BambooPhoenix, view: ManagementWeb.EmailView
-  import Ecto.Query, warn: false
+  use Bamboo.Phoenix, view: ManagementWeb.EmailView
+  import Ecto.Query, only: [select: 3]
   alias Management.{Mailer, Repo}
   alias Management.AccountManager.Account
 
@@ -22,6 +22,22 @@ defmodule Management.AccountManager.Notifier do
     |> assign(:confirmation_url, confirmation_url)
     # renders the reset_password.html
     |> render(:account_confirmation)
+    # deliver the email
+    |> Mailer.deliver_later()
+  end
+
+  @doc """
+  Send password recovery email to the account
+  """
+  def send_password_recovery_email(%Account{} = account, password_recovery_url) do
+    "#{@app_name}: Password Recovery"
+    |> base_email()
+    |> to(account)
+    # the account owner as the assigns to be accessed in the layout
+    |> assign(:account, get_account_owner(account))
+    |> assign(:password_recovery_url, password_recovery_url)
+    # renders the reset_password.html
+    |> render(:password_recovery)
     # deliver the email
     |> Mailer.deliver_later()
   end

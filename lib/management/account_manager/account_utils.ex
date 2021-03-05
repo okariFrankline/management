@@ -4,7 +4,8 @@ defmodule Management.AccountManager.Account.Utils do
   import Ecto.Query, warn: false
 
   alias Management.WriterManager.WriterProfile
-  alias Management.ManagementManager.ManagementProfile
+  alias Management.OwnerManager.OwnerProfile
+  alias Management.AccountManager.Account
   alias Management.Types
 
   @spec validate_email(Types.ecto()) :: Types.ecto()
@@ -29,7 +30,7 @@ defmodule Management.AccountManager.Account.Utils do
       # unsafe validate unique allows for fast feedback to the user.
       # however, since it is unsafe, it should be used with unique constraint as failure to do so may lead
       # to race conditions.
-      # |> unsafe_validate_unique(:email, Management.Repo)
+      |> unsafe_validate_unique(:email, Management.Repo)
       |> unique_constraint(
         :email,
         message: "The email entered is already in use."
@@ -87,13 +88,13 @@ defmodule Management.AccountManager.Account.Utils do
      iex> account_owner_query(account)
      {:ok, %Ecto.Query{}}
   """
-  @spec account_owner_query() :: {:ok, Ecto.Query.t()}
+  @spec account_owner_query(Account.t()) :: {:ok, Ecto.Query.t()}
   def account_owner_query(%Account{account_type: account_type, id: id}) do
     query =
       case account_type do
         "Management Account" ->
           from(
-            owner in ManagementProfile,
+            owner in OwnerProfile,
             where: owner.account_id == ^id
           )
 

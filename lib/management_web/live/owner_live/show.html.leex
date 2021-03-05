@@ -1,0 +1,52 @@
+<h1>Show Owner</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, ManagementWeb.OwnerLive.FormComponent,
+    id: @owner.id,
+    title: @page_title,
+    action: @live_action,
+    owner: @owner,
+    return_to: Routes.owner_show_path(@socket, :show, @owner) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Full name:</strong>
+    <%= @owner.full_name %>
+  </li>
+
+  <li>
+    <strong>Subscription package:</strong>
+    <%= @owner.subscription_package %>
+  </li>
+
+  <li>
+    <strong>Sub start date:</strong>
+    <%= @owner.sub_start_date %>
+  </li>
+
+  <li>
+    <strong>Sub expiry date:</strong>
+    <%= @owner.sub_expiry_date %>
+  </li>
+
+  <li>
+    <strong>Owner image:</strong>
+    <%= @owner.owner_image %>
+  </li>
+
+  <li>
+    <strong>Phone numbers:</strong>
+    <%= @owner.phone_numbers %>
+  </li>
+
+  <li>
+    <strong>Sub is active:</strong>
+    <%= @owner.sub_is_active %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.owner_show_path(@socket, :edit, @owner), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.owner_index_path(@socket, :index) %></span>

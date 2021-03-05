@@ -9,6 +9,7 @@ defmodule Management.AccountManager.Account do
   """
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query, warn: false
   alias __MODULE__.Utils
   alias Management.{Types, Repo}
 
@@ -62,7 +63,8 @@ defmodule Management.AccountManager.Account do
   end
 
   @doc false
-  @spec password_changeset(t() | Types.ecto(), map()) :: Types.ecto()
+  @spec password_changeset(t() | Ecto.Changeset.t(), map()) ::
+          {:ok, Ecto.Changeset.t()} | {:error, Ecto.Changeset.t()}
   def password_changeset(account, attrs) do
     account
     |> change(attrs)
@@ -72,11 +74,18 @@ defmodule Management.AccountManager.Account do
     ])
     |> Utils.validate_password()
     |> Utils.hash_password()
+    |> case do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        {:ok, changeset}
+
+      changeset ->
+        {:error, changeset}
+    end
   end
 
   @doc false
-  @spec confrim_changeset(t()) :: Ecto.Changeset.t()
-  def confrim_changeset(account) do
+  @spec confirm_changeset(t()) :: Ecto.Changeset.t()
+  def confirm_changeset(%__MODULE__{} = account) do
     now =
       NaiveDateTime.utc_now()
       |> NaiveDateTime.truncate(:second)
@@ -88,9 +97,41 @@ defmodule Management.AccountManager.Account do
     })
   end
 
+  @doc """
+  Verifies the password.
+
+  If there is no user or the user doesn't have a password, we call
+  `Bcrypt.no_user_verify/0` to avoid timing attacks.
+  """
+  @spec valid_password?(Account.t(), binary()) :: true | false
+  def valid_password?(%__MODULE__{password_hash: hashed_password}, password)
+      when is_binary(hashed_password) and byte_size(password) > 0 do
+    Argon2.verify_pass(password, hashed_password)
+  end
+
+  def valid_password?(_, _) do
+    Argon2.no_user_verify()
+    false
+  end
+
+  @doc """
+  Validates the current password otherwise adds an error to the changeset.
+  """
+  @spec validate_current_password(t(), map()) :: Ecto.Changeset.t()
+  def validate_current_password(account, %{"current_pasword" => password} = params) do
+    changeset = change(account, params)
+
+    if valid_password?(changeset.data, password) do
+      changeset
+    else
+      changeset
+      |> add_error(:current_password, "Current password is not valid.")
+    end
+  end
+
   # implemente the bamboo formatter for the account
   defimpl Bamboo.Formatter do
-    def format_email_address(%Account{email: email} = account, _opts) do
+    def format_email_address(%Management.AccountManager.Account{email: email} = account, _opts) do
       # get the account owner
       account_owner =
         account
@@ -102,7 +143,7 @@ defmodule Management.AccountManager.Account do
         })
         |> Repo.one()
 
-      full_name = "#{account.last_name} #{account.first_name}"
+      full_name = "#{account_owner.last_name} #{account_owner.first_name}"
 
       {full_name, email}
     end

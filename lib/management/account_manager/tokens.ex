@@ -14,7 +14,7 @@ defmodule Management.AccountManager.Token do
   @hash_algorithm :sha256
   @rand_size 32
   @reset_password_validity_in_days 1
-  @confirm_validity_in_days 1a
+  @confirm_validity_in_days 1
   @change_email_validity_in_days 7
 
   @primary_key {:id, :binary_id, autogenerate: true}
