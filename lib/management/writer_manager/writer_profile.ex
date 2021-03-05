@@ -22,7 +22,7 @@ defmodule Management.WriterManager.WriterProfile do
     # 2. Pro Account => This is the most advanced with package that a writer account can be
     #     and also contains many features.
     # 3. Free Trial Account
-    field(:suscription_package, :string)
+    field(:subscription_package, :string)
     # vitual fields
     field(:last_name, :string, virtual: true)
     field(:first_name, :string, virtual: true)
@@ -40,17 +40,18 @@ defmodule Management.WriterManager.WriterProfile do
       :first_name,
       :last_name,
       :gender,
-      :suscription_package
+      :subscription_package
     ])
     |> validate_required([
       :first_name,
       :last_name,
       :gender,
-      :suscription_package
+      :subscription_package
     ])
     |> validate_inclusion(:gender, ["Female", "Male"])
     |> put_full_name()
-    |> foreign_key_constraint(:account)
+
+    # |> foreign_key_constraint(:account)
   end
 
   @doc false
@@ -69,19 +70,19 @@ defmodule Management.WriterManager.WriterProfile do
   end
 
   @spec put_full_name(Ecto.Changeset.t()) :: Ecto.Changeset.t()
-  defp put_full_name(
-         %Ecto.Changeset{changes: %{first_name: f_name, last_name: l_name}} = changeset
-       ) do
+  defp put_full_name(%Ecto.Changeset{} = changeset) do
     if changeset.valid? do
       f_name =
-        f_name
+        changeset
+        |> get_change(:first_name)
         |> String.trim()
-        |> String.upcase()
+        |> String.capitalize()
 
       l_name =
-        l_name
+        changeset
+        |> get_change(:last_name)
         |> String.trim()
-        |> String.upcase()
+        |> String.capitalize()
 
       changeset
       |> put_change(:full_name, "#{l_name} #{f_name}")

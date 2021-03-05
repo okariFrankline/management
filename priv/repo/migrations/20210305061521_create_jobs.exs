@@ -15,7 +15,7 @@ defmodule Management.Repo.Migrations.CreateJobs do
       add :subject, :string
       add :attachments, {:array, :string}
       add :writer_id, :binary_id
-      add :owner_profile_id, references(:owner_profile, on_delete: :nothing, type: :binary_id)
+      add :owner_profile_id, references(:owner_profiles, on_delete: :nothing, type: :binary_id)
 
       timestamps()
     end

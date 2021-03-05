@@ -5,8 +5,8 @@ defmodule Management.OwnerManager.OwnerProfile do
   @type t :: %__MODULE__{}
 
   @organization_types [
-    "Coorporate",
-    "Individual"
+    "Corporate Account",
+    "Individual Account"
   ]
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -62,8 +62,9 @@ defmodule Management.OwnerManager.OwnerProfile do
     ])
     |> put_account_code()
     |> validate_inclusion(:organization_type, @organization_types)
-    |> unsafe_validate_unique(:phone_number, Management.Repo)
-    |> unique_constraint(:phone_number, message: "The phone number entered is invalid.")
+
+    # |> unsafe_validate_unique(:phone_number, Management.Repo)
+    # |> unique_constraint(:phone_number, message: "The phone number entered is invalid.")
   end
 
   @doc false

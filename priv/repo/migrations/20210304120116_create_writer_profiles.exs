@@ -7,13 +7,13 @@ defmodule Management.Repo.Migrations.CreateWriterProfiles do
       add(:full_name, :string)
       add(:gender, :string, null: false, default: "Female")
       add(:name_initials, :string, null: false, default: "SU")
-      add(:suscription_package, :string, default: "Standard Account")
+      add(:subscription_package, :string, default: "Standard Account")
       add(:profile_image, :string)
       add(:sub_expiry_date, :naive_datetime)
       add(:sub_start_date, :naive_datetime)
       add(:sub_is_active, :boolean, default: true)
 
-      add(:account_id, references(:accounts, on_delete: :delete_al, type: :binary_id))
+      add(:account_id, references(:accounts, on_delete: :delete_all, type: :binary_id))
 
       timestamps()
     end

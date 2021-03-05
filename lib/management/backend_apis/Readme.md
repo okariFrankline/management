@@ -8,3 +8,5 @@
 
 => Each file provides an API for a single context and only intertwining whenever necessary.
 e.g. account_manager.api.ex provides an api for functionalities only for managing an Account such as registering, login in, password reset, etc.
+
+###### Andrew Kagia, Frank Miller
