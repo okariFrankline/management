@@ -31,7 +31,7 @@ defmodule Management.WriterManager.WriterProfileTest do
   ]
 
   describe "schema fields" do
-    @tag :owner_profile_schema_definition
+    @tag :writer_profile_schema_definition
     test "Ensures that all the fields that are defined in the schema are similar" do
       actual_fields =
         for field <- Profile.__schema__(:fields) do

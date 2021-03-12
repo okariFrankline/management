@@ -1,0 +1,25 @@
+<h1 class="text-red-500 text-5xl font-bold text-center">Tailwind CSS</h1>
+<%= f = form_for @changeset, "#",
+    id: "account-form",
+    phx_target: @myself,
+    phx_submit: "create",
+    phx_change: "validate" %>
+
+    <%# Email address for creating a new user %>
+    <%= label f, :email, "Email Address", class: "" %>
+    <%= text_input f, :email %>
+    <%= error_tag f, :emai; %>
+
+    <%# Password field %>
+    <%= label f, :password, "Password" %>
+    <%= password_input f, :password %>
+    <%= error_tag f, :password %>
+
+    <%#  Password confirmation %>
+    <%= label f, :password_confirmation, "Password confirmation" %>
+    <%= password_input f, :password_confirmation %>
+    <%= error_tag f, :password_confirmation %>
+
+    <%= submit "Save", phx_disable_with: "Saving..." %>
+
+</form>

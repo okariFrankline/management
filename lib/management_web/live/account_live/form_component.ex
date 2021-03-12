@@ -52,4 +52,9 @@ defmodule ManagementWeb.AccountLive.FormComponent do
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
+
+  @impl true
+  def render(assigns) do
+    Phoenix.View.render(ManagementWeb.AccountView, "register.html", assigns)
+  end
 end

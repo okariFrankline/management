@@ -8,6 +8,8 @@ defmodule Management.Repo.Migrations.CreateWriterProfiles do
       add(:gender, :string, null: false, default: "Female")
       add(:name_initials, :string, null: false, default: "SU")
       add(:subscription_package, :string, default: "Standard Account")
+      add(:subscription_active, :boolean, default: false, null: false)
+      add(:team_memberships, {:array, :binary_id}, default: [], null: false)
       add(:profile_image, :string)
       add(:sub_expiry_date, :naive_datetime)
       add(:sub_start_date, :naive_datetime)

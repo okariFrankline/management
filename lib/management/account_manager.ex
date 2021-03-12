@@ -25,6 +25,24 @@ defmodule Management.AccountManager do
   end
 
   @doc """
+  Gets a user by email and password.
+
+  ## Examples
+
+      iex> get_user_by_email_and_password("foo@example.com", "correct_password")
+      %User{}
+
+      iex> get_user_by_email_and_password("foo@example.com", "invalid_password")
+      nil
+
+  """
+  def get_account_by_email_and_password(email, password)
+      when is_binary(email) and is_binary(password) do
+    account = Repo.get_by(Account, email: email)
+    if Account.valid_password?(account, password), do: account
+  end
+
+  @doc """
   Returns the list of accounts.
 
   ## Examples

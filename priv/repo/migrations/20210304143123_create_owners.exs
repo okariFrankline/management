@@ -8,10 +8,12 @@ defmodule Management.Repo.Migrations.CreateOwners do
       add(:subscription_package, :string, null: false, default: "Free Trial Account")
       add(:sub_start_date, :naive_datetime)
       add(:sub_expiry_date, :naive_datetime)
+      add(:subscription_active, :boolean, default: false, null: false)
       add(:writer_limit, :integer, default: 3, null: false)
       add(:profile_image, :string)
-      add :account_code, :binary
+      add(:account_code, :binary)
       add(:phone_number, :string, unique: true)
+      add(:team_members, {:array, :binary_id}, default: [])
       add(:sub_is_active, :boolean, default: false, null: false)
       add(:account_id, references(:accounts, on_delete: :delete_all, type: :binary_id))
 

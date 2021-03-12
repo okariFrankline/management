@@ -35,7 +35,7 @@ defmodule Management.OwnerManager do
       ** (Ecto.NoResultsError)
 
   """
-  def get_owner!(id), do: Repo.get!(Owner, id)
+  def get_owner_profile!(id), do: Repo.get!(Owner, id)
 
   @doc """
   Creates a owner.
@@ -49,10 +49,46 @@ defmodule Management.OwnerManager do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_owner(attrs \\ %{}) do
+  def create_owner_profile(attrs \\ %{}) do
     %Owner{}
     |> Owner.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Updates a owner's personal information.
+
+  ## Examples
+
+      iex> update_owner_profile_information(owner, %{field: new_value})
+      {:ok, %Owner{}}
+
+      iex> update_owner_profile_information(owner, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_owner_profile_information(%Owner{} = owner, attrs) do
+    owner
+    |> Owner.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates a owner's personal information.
+
+  ## Examples
+
+      iex> update_owner_profile_information(owner, %{field: new_value})
+      {:ok, %Owner{}}
+
+      iex> update_owner_profile_information(owner, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_subscription_information(%Owner{} = owner, attrs) do
+    owner
+    |> Owner.subscription_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """

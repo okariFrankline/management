@@ -3,9 +3,9 @@ defmodule Management.AccountsManager.API do
   Provides an API for managing an account
   """
   alias Ecto.Multi
-  alias Management.AccountManager
+  alias Management.{AccountManager, OwnerManager, WriterManager}
   alias Management.AccountManager.{Notifier, Account, Token}
-  alias Management.Repo
+  alias Management.{Repo, Authentication}
 
   @type reason :: binary()
 
@@ -16,18 +16,18 @@ defmodule Management.AccountsManager.API do
   @spec create_account(map(), (binary -> binary)) ::
           {:ok, Account.t()} | {:error, Ecto.Changeset.t()}
   def create_account(params, confirmation_url_fun) when is_function(confirmation_url_fun, 1) do
-    case AccountManager.create_account(params) do
-      {:ok, %Account{} = account} = result ->
-        {encoded_token, token} =
-          account
-          |> Token.build_hashed_token("Account Confirmation")
+    with {:ok, %Account{} = account} = result <- AccountManager.create_account(params),
+         _profile <- create_profile(account) do
+      {encoded_token, token} =
+        account
+        |> Token.build_hashed_token("Account Confirmation")
 
-        Repo.insert!(token)
-        # send the confirmation email
-        Notifier.send_verification_email(account, confirmation_url_fun.(encoded_token))
-        # return {:ok, account}
-        result
-
+      Repo.insert!(token)
+      # send the confirmation email
+      Notifier.send_verification_email(account, confirmation_url_fun.(encoded_token))
+      # return {:ok, account}
+      result
+    else
       {:error, _changeset} = error ->
         error
     end
@@ -44,7 +44,7 @@ defmodule Management.AccountsManager.API do
       nil ->
         with {:ok, account_query} <-
                Token.verify_email_token_query(token, "Account Confirmation"),
-             {%Account{} = account} <- Repo.one(account_query) do
+             %Account{} = account <- Repo.one(account_query) do
           Multi.new()
           |> Multi.update(
             :account,
@@ -180,5 +180,57 @@ defmodule Management.AccountsManager.API do
     else
       {:error, changeset}
     end
+  end
+
+  @doc """
+  Login
+  Login a user using their password and the ermail address
+
+  ##Example
+      iex> login_with_email_and_password(email, password)
+      {:ok, %Account{}}
+
+      iex> login_with_email_and_password(email, password)
+      {:error, :invalid_credentials}
+  """
+  @spec login_with_email_and_password(binary(), binary()) ::
+          {:ok, Account.t()} | {:error, :invalid_credentials}
+  def login_with_email_and_password(email, password) do
+    case AccountManager.get_account_by_email_and_password(email, password) do
+      %Account{} = account ->
+        # create a token
+        {:ok, token, _claims} = Authentication.Guardian.encode_and_sign(account)
+
+        {
+          :ok,
+          %{
+            token: token,
+            account: account
+          }
+        }
+
+      false ->
+        {:error, :invalid_credentials}
+    end
+  end
+
+  @spec create_profile(Account.t()) :: Ecto.Schema.t()
+  defp create_profile(%Account{account_type: account_type, id: id} = _account) do
+    changeset =
+      case account_type do
+        "Writer Account" ->
+          %WriterManager.WriterProfile{}
+          |> Ecto.Changeset.change(%{
+            account_id: id
+          })
+
+        "Management Account" ->
+          %OwnerManager.OwnerProfile{}
+          |> Ecto.Changeset.change(%{
+            account_id: id
+          })
+      end
+
+    Repo.insert!(changeset)
   end
 end

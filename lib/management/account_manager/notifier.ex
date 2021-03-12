@@ -56,10 +56,7 @@ defmodule Management.AccountManager.Notifier do
     account
     |> Account.Utils.account_owner_query()
     |> elem(1)
-    |> select([owner], %{
-      first_name: owner.first_name,
-      last_name: owner.last_name
-    })
+    |> select([owner], map(owner, [:full_name]))
     |> Repo.one()
   end
 end

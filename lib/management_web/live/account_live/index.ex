@@ -3,6 +3,13 @@ defmodule ManagementWeb.AccountLive.Index do
 
   alias Management.AccountManager
   alias Management.AccountManager.Account
+  alias ManagementWeb.AccountView
+  alias Phoenix.View
+
+  @impl true
+  def render(assigns) do
+    View.render(AccountView, "index.html", assigns)
+  end
 
   @impl true
   def mount(_params, _session, socket) do

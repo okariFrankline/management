@@ -9,6 +9,8 @@ defmodule Management.Authentication.Guardian do
     {:ok, to_string(id)}
   end
 
+  def subject_for_token(_, _), do: :error
+
   @doc false
   def resource_from_claims(%{"sub" => id} = _claims) do
     account = AccountManager.get_account!(id)
@@ -18,6 +20,8 @@ defmodule Management.Authentication.Guardian do
     Ecto.NoResultsError ->
       {:error, :no_resource}
   end
+
+  def resource_from_claims(_, _), do: {:error, :no_resource}
 
   def after_encode_and_sign(resource, claims, token, _options) do
     with {:ok, _} <- Guardian.DB.after_encode_and_sign(resource, claims["typ"], claims, token) do

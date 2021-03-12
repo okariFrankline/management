@@ -70,7 +70,7 @@ defmodule Management.GroupManager.Group do
 
   # ensures the length is at least 20 words in length
   @spec validate_description_length(Ecto.Changeset.t()) :: Ecto.Changeset.t()
-  defp validate_description_length(%Ecto.Changeset{changes: %{descripiton: desc}} = changeset) do
+  defp validate_description_length(%Ecto.Changeset{changes: %{description: desc}} = changeset) do
     if changeset.valid? do
       word_count =
         desc
@@ -84,6 +84,8 @@ defmodule Management.GroupManager.Group do
           |> put_change(:description, "Group description must be at least 20 words in length")
     end
   end
+
+  defp validate_description_length(changeset), do: changeset
 
   ### Adding a new mwmber to the team
   # 1. Get the current members already in the team.
@@ -119,4 +121,6 @@ defmodule Management.GroupManager.Group do
       changeset
     end
   end
+
+  defp add_group_name(changeset, _account), do: changeset
 end

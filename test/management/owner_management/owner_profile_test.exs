@@ -94,6 +94,63 @@ defmodule Management.OwnerManager.OwnerProfileTest do
     end
   end
 
+  describe "profile_image_changeset/2" do
+    @tag :owner_profile_image
+    test "Success: Given the correct params the changeset will always be valid" do
+      params = %{
+        profile_image: "fhsjhajfhahfahfbhbhfa"
+      }
+
+      assert %Changeset{valid?: true, changes: changes} =
+               %Profile{}
+               |> Profile.profile_image_changeset(params)
+
+      for {field, _type} <- [{:profile_image, :string}] do
+        actual_value = Map.get(params, field)
+        expected_value = Map.get(changes, field)
+
+        assert actual_value == expected_value,
+               "ERROR:\nExpected value: #{expected_value}\nActual value: #{actual_value}"
+      end
+    end
+
+    @tag :owner_profile_image
+    test "ERROR: Ensures that given missing required params, the changeset is always in invalid" do
+      params = %{}
+
+      assert %Changeset{valid?: false, errors: errors} =
+               %Profile{}
+               |> Profile.profile_image_changeset(params)
+
+      for {field, _type} <- [{:profile_image, :string}] do
+        assert errors[field], "Expected field: #{field} to be in the errors arrays"
+        {_, meta} = errors[field]
+
+        assert meta[:validation] == :required,
+               "ERROR:\nExpected error: #{meta[:validation]}\nCompared to: ':required'"
+      end
+    end
+
+    @tag :owner_profile_image
+    test "ERROR: Ensures that given params of invalid type, the changeset will always be invalid" do
+      wrong_params = %{
+        profile_image: DateTime.utc_now()
+      }
+
+      assert %Changeset{valid?: false, errors: errors} =
+               %Profile{}
+               |> Profile.profile_image_changeset(wrong_params)
+
+      for {field, _type} <- [{:profile_image, :string}] do
+        assert errors[field], "Expected field: #{field} to be in the errors arrays"
+        {_, meta} = errors[field]
+
+        assert meta[:validation] == :cast,
+               "ERROR:\nExpected error: #{meta[:validation]}\nCompared to: ':cast'"
+      end
+    end
+  end
+
   # invlaid params
   defp invalid_params(fields_with_types) do
     invalid_values = %{

@@ -56,6 +56,42 @@ defmodule Management.WriterManager do
   end
 
   @doc """
+  Updates a writer_profile personal information.
+
+  ## Examples
+
+      iex> update_personal_information(writer_profile, %{field: new_value})
+      {:ok, %WriterProfile{}}
+
+      iex> update_personal_information(writer_profile, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_personal_information(%WriterProfile{} = writer_profile, attrs) do
+    writer_profile
+    |> WriterProfile.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates a writer_profile account subscription  information.
+
+  ## Examples
+
+      iex> update_subscrpption_information(writer_profile, %{field: new_value})
+      {:ok, %WriterProfile{}}
+
+      iex> update_subscription_information(writer_profile, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_subscription_information(%WriterProfile{} = writer_profile, attrs) do
+    writer_profile
+    |> WriterProfile.subscription_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Updates a writer_profile.
 
   ## Examples
