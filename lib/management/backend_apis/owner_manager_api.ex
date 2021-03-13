@@ -10,6 +10,26 @@ defmodule Management.OwnerManager.API do
   @typep not_found :: {:error, :account_not_found}
 
   @doc """
+  Gets the account owner's profile information
+
+  ## Examples
+      iex> get_profile(%Account{} = account)
+      {:ok, %OwnerProfile{}}
+
+      iex> get_profile(%Account{} = account)
+      {:error, :account_not_found}
+  """
+  @spec get_profile(Account.t()) :: {:ok, OwnerProfile.t()} | not_found()
+  def get_profile(%Account{} = account) do
+    %OwnerProfile{} = profile = account |> get_profile_for_account!()
+
+    {:ok, profile}
+  rescue
+    Ecto.NoResultsError ->
+      {:error, :account_not_found}
+  end
+
+  @doc """
   update account personal_information
 
   ## Example

@@ -49,9 +49,9 @@ defmodule Management.JobManager do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_job(attrs \\ %{}) do
-    %Job{}
-    |> Job.changeset(attrs)
+  def create_job(%Job{} = job, attrs \\ %{}) do
+    job
+    |> Job.creation_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -70,6 +70,42 @@ defmodule Management.JobManager do
   def update_job(%Job{} = job, attrs) do
     job
     |> Job.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates a job's description
+
+  ## Examples
+
+      iex> update_job_description(job, %{field: new_value})
+      {:ok, %Job{}}
+
+      iex> update_job_description(job, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_job_description(%Job{} = job, attrs) do
+    job
+    |> Job.description_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates a job's visibility
+
+  ## Examples
+
+      iex> update_job_visibility(job, %{field: new_value})
+      {:ok, %Job{}}
+
+      iex> update_job_visibility(job, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_job_visibility(%Job{} = job, attrs) do
+    job
+    |> Job.visibility_changeset(attrs)
     |> Repo.update()
   end
 

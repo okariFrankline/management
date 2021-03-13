@@ -3,6 +3,11 @@ defmodule Management.JobManager.Job do
   import Ecto.Changeset
 
   @type t :: %__MODULE__{}
+  @visibilities [
+    "Everyone",
+    "Group",
+    "Individual"
+  ]
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -16,7 +21,8 @@ defmodule Management.JobManager.Job do
     field :job_type, :string
     field :is_submitted, :boolean, default: false
     # indicates the payment status for the job,
-    # the payment status can be: "Approved", "Pending", "Canceled"
+    # the payment status can be: "Paid", "Pending", "Canceled"
+    # defaults to pending
     field :payment_status, :string
     # indicates the status of whether the job has been picked,
     # in progress, Late or pending
@@ -36,7 +42,9 @@ defmodule Management.JobManager.Job do
     end
 
     # indicates the id of the writer who will pick this job
-    field :writer_id, :binary_id
+    field :writer_profile_id, :binary_id
+    # indicates the date the job was picked
+    field :picked_on, :naive_datetime
 
     # this job belongs to one owner
     belongs_to :owner_profile, Management.OwnerManager.OwnerProfile
@@ -75,6 +83,7 @@ defmodule Management.JobManager.Job do
       :deadline
     ])
     |> validate_deadline()
+    |> foreign_key_constraint(:owner_profile_id)
   end
 
   @doc false
@@ -126,6 +135,7 @@ defmodule Management.JobManager.Job do
     |> validate_required([
       :visibility_type
     ])
+    |> validate_inclusion(:visbility_type, @visibilities)
     |> check_asset_id()
   end
 
@@ -186,9 +196,8 @@ defmodule Management.JobManager.Job do
     end
   end
 
-  @doc false
   @spec check_asset_id(Ecto.Changeset.t()) :: Ecto.Changeset.t()
-  def check_asset_id(%Ecto.Changeset{changes: %{visibility_type: type}} = changeset) do
+  defp check_asset_id(%Ecto.Changeset{changes: %{visibility_type: type}} = changeset) do
     if changeset.valid? do
       if type == "Everyone", do: changeset |> put_change(:asset_id, nil), else: changeset
     else
