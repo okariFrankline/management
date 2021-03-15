@@ -8,6 +8,25 @@ defmodule Management.WriterManager do
 
   alias Management.WriterManager.WriterProfile
 
+  def data do
+    Dataloader.Ecto.new(Repo, query: &query/2)
+  end
+
+  def query(WriterProfile, _) do
+    from(
+      writer in WriterProfile,
+      select:
+        map(writer, [
+          :full_name,
+          :profile_image,
+          :gender,
+          :id
+        ])
+    )
+  end
+
+  def query(queryable, _), do: queryable
+
   @doc """
   Returns the list of writer_profiles.
 

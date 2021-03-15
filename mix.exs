@@ -53,6 +53,7 @@ defmodule Management.MixProject do
       {:bamboo, github: "thoughtbot/bamboo", override: true},
       {:bamboo_phoenix, "~> 1.0"},
       {:timex, "~> 3.6"},
+      {:dataloader, "~> 1.0"},
       {:faker, "~> 0.16.0", only: :test},
       {:ex_machina, "~> 2.6", only: :test}
     ]

@@ -52,6 +52,8 @@ defmodule Management.GroupManager.Group do
     ])
     |> validate_description_length()
     |> add_group_name(owner)
+    |> foreign_key_constraint(:owner_profile_id)
+    |> unique_constraint(:group_name)
   end
 
   @doc false
@@ -112,11 +114,12 @@ defmodule Management.GroupManager.Group do
   @spec add_group_name(Ecto.Changeset.t(), OwnerProfile.t()) :: Ecto.Changeset.t()
   defp add_group_name(
          %Ecto.Changeset{changes: %{group_name: g_name}} = changeset,
-         %OwnerProfile{account_code: acc_code} = _owner
+         %OwnerProfile{account_code: acc_code, id: id} = _owner
        ) do
     if changeset.valid? do
       changeset
       |> put_change(:group_name, "#{acc_code}:#{g_name}")
+      |> put_change(:owner_profile_id, id)
     else
       changeset
     end

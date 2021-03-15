@@ -7,6 +7,7 @@ defmodule Management.GroupManager do
   alias Management.Repo
 
   alias Management.GroupManager.Group
+  alias Management.OwnerManager.OwnerProfile
 
   @doc """
   Returns the list of groups.
@@ -49,9 +50,9 @@ defmodule Management.GroupManager do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_group(attrs \\ %{}) do
+  def create_group(attrs \\ %{}, %OwnerProfile{} = profile) do
     %Group{}
-    |> Group.changeset(attrs)
+    |> Group.creation_changeset(attrs, profile)
     |> Repo.insert()
   end
 
@@ -70,6 +71,24 @@ defmodule Management.GroupManager do
   def update_group(%Group{} = group, attrs) do
     group
     |> Group.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates a group's membership.
+
+  ## Examples
+
+      iex> update_group_membership(group, %{field: new_value})
+      {:ok, %Group{}}
+
+      iex> update_group_membership(group, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_group_membership(%Group{} = group, attrs) do
+    group
+    |> Group.member_changeset(attrs)
     |> Repo.update()
   end
 

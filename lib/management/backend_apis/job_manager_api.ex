@@ -8,6 +8,7 @@ defmodule Management.JobManager.API do
   alias Management.JobManager.Job
   alias Management.AccountManager.Account
   alias Management.OwnerManager.OwnerProfile
+  alias Management.API.Utils
 
   @doc """
   Lists all the jobs that have not been picked for a given management account
@@ -96,7 +97,7 @@ defmodule Management.JobManager.API do
     {:ok, job}
   rescue
     Ecto.NoResultsError ->
-      {:error, :not_found}
+      {:error, "Error! The job could not be found."}
   end
 
   @doc """
@@ -120,7 +121,7 @@ defmodule Management.JobManager.API do
     with {:ok, %Job{} = _job} = result <- JobManager.create_job(job, params), do: result
   rescue
     Ecto.NoResultsError ->
-      {:error, :account_not_found}
+      {:error, "Error! Your account does not exist."}
   end
 
   @doc """
@@ -136,8 +137,8 @@ defmodule Management.JobManager.API do
       iex> set_description(invalid_job_id, description)
       {:error, :job_not_found}
   """
-  @spec set_description(binary(), %{binary() => binary()}) ::
-          {:ok, Job.t()} | {:error, Ecto.Changeset.t()} | {:error, :job_not_found}
+  @spec set_description(job_id :: binary(), params :: %{binary() => binary()}) ::
+          {:ok, Job.t()} | {:error, Ecto.Changeset.t()} | {:error, binary()}
   def set_description(job_id, params) do
     %Job{} = job = JobManager.get_job!(job_id)
 
@@ -145,7 +146,7 @@ defmodule Management.JobManager.API do
          do: result
   rescue
     Ecto.NoResultsError ->
-      {:error, :job_not_found}
+      {:error, "Error! The job could not be found."}
   end
 
   @doc """
@@ -161,8 +162,8 @@ defmodule Management.JobManager.API do
       iex> set_job_visibility(invalid_job_id, visibility_params)
       {:error, :job_not_found}
   """
-  @spec set_job_visibility(binary(), %{binary() => binary()}) ::
-          {:ok, Job.t()} | {:error, Ecto.Changeset.t()} | {:error, :job_not_found}
+  @spec set_job_visibility(job_id :: binary(), params :: %{binary() => binary()}) ::
+          {:ok, Job.t()} | {:error, Ecto.Changeset.t()} | {:error, binary()}
   def set_job_visibility(job_id, params) do
     %Job{} = job = JobManager.get_job!(job_id)
 
@@ -170,7 +171,7 @@ defmodule Management.JobManager.API do
          do: result
   rescue
     Ecto.NoResultsError ->
-      {:error, :job_not_found}
+      {:error, "Error! The job could not be found."}
   end
 
   @doc """
@@ -182,7 +183,8 @@ defmodule Management.JobManager.API do
 
       iex> pick_job(job_id, writer_profile_id)
   """
-  @spec pick_job(binary(), binary()) :: :ok | {:error, Ecto.Changeset.t()} | {:error, atom()}
+  @spec pick_job(job_id :: binary(), writer_profile_id :: binary()) ::
+          :ok | {:error, Ecto.Changeset.t()} | {:error, binary()}
   def pick_job(job_id, writer_profile_id) do
     %Job{} = job = JobManager.get_job!(job_id)
 
@@ -194,11 +196,11 @@ defmodule Management.JobManager.API do
 
       with {:ok, %Job{} = _job} <- Repo.update(job_changeset), do: :ok
     else
-      {:error, :already_picked}
+      {:error, "Error! The job has already been picked."}
     end
   rescue
     Ecto.NoResultsError ->
-      {:error, :job_not_found}
+      {:error, "Error! The job could not be found."}
   end
 
   # gets the owner profile from an account

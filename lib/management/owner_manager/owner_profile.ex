@@ -13,7 +13,7 @@ defmodule Management.OwnerManager.OwnerProfile do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "owner_profiles" do
-    # personal information
+    # personal informationtea
     field(:full_name, :string)
     field(:profile_image, :string)
     field(:phone_number, :string)
@@ -48,6 +48,9 @@ defmodule Management.OwnerManager.OwnerProfile do
     # team members
     # holds all the members for this account
     field :team_members, {:array, :binary_id}
+    # Has many groups
+    has_many :groups, Management.GroupManager.Group
+    has_many :jobs, Management.JobManager.Job
 
     belongs_to(:account, Management.AccountManager.Account, type: :binary_id)
     timestamps()

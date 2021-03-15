@@ -16,6 +16,7 @@ defmodule Management.JobManager.Job do
     field :contains_corrections, :boolean, default: false
     field :deadline, :naive_datetime
     field :description, :string
+    field :payable_amount, :integer
     # indicates whether the job is "Express/Rush", "Standard"
     # An express job is one that needs to be done
     field :job_type, :string
@@ -25,7 +26,7 @@ defmodule Management.JobManager.Job do
     # defaults to pending
     field :payment_status, :string
     # indicates the status of whether the job has been picked,
-    # in progress, Late or pending
+    # "In Progress", "Late" or "Completed"
     # defaults to "Pending"
     field :status, :string
     field :subject, :string
