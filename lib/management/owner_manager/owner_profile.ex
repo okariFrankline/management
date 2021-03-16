@@ -48,6 +48,9 @@ defmodule Management.OwnerManager.OwnerProfile do
     # team members
     # holds all the members for this account
     field :team_members, {:array, :binary_id}
+    # hlds a list of ids for team members that
+    # this accountowner has suspended
+    field :suspended_team_members, {:array, :binary_id}
     # Has many groups
     has_many :groups, Management.GroupManager.Group
     has_many :jobs, Management.JobManager.Job

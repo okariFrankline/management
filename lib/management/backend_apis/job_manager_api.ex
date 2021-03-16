@@ -8,7 +8,39 @@ defmodule Management.JobManager.API do
   alias Management.JobManager.Job
   alias Management.AccountManager.Account
   alias Management.OwnerManager.OwnerProfile
+  alias Management.WriterManager.WriterProfile
   alias Management.API.Utils
+
+  @doc """
+  Returns all the jobs created by a given account owner
+  Also filtered given filters
+
+  ### Examples
+      iex> all_jobs_created(%Account{} = account_owner, filters)
+      [%Job{, ...}]
+  """
+  @spec all_jobs_created(Account.t(), %{binary() => binary()}) ::
+          [Job.t(), ...] | [] | {:error, binary()}
+  def all_jobs_created(%Account{} = account, filters) do
+    owner_profile = Utils.get_owner_profile_for_account!(account)
+
+    from(
+      job in Job,
+      where: job.owner_profile_id == ^owner_profile.id,
+      select:
+        map(job, [
+          :id,
+          :payment_status,
+          :subject,
+          :job_type
+        ])
+    )
+    |> jobs_query(filters)
+    |> Repo.all()
+  rescue
+    Ecto.NoResultsError ->
+      {:error, "Error! Your Writing Management Account could not be found"}
+  end
 
   @doc """
   Lists all the jobs that have not been picked for a given management account
@@ -203,6 +235,36 @@ defmodule Management.JobManager.API do
       {:error, "Error! The job could not be found."}
   end
 
+  @doc """
+  Enable the owner of the job to change the payment status of a job
+
+  ## Example
+    iex> update_payment_status(job_id, %{"status" => status})
+    {:ok, %Job{}}
+
+    iex> update_payment_status(job_id, %{"status" => status})
+    {:error, reason}
+  """
+  @spec update_payment_status(job_id :: binary(), params :: %{binary() => binary()}) ::
+          {:ok, Job.t()} | {:error, binary()}
+  def update_payment_status(job_id, %{"status" => status} = _params) do
+    %Job{} = job = JobManager.get_job!(job_id)
+
+    with {:ok, %Job{} = _job} = result <-
+           job
+           |> Ecto.Changeset.change()
+           |> Ecto.Changeset.put_change(:payment_status, status)
+           |> Repo.update() do
+      result
+    else
+      {:error, _} ->
+        {:error, "Error! The job's payment status could not be updated."}
+    end
+  rescue
+    Ecto.NoResultsError ->
+      {:error, "Error! The specified job could not be found."}
+  end
+
   # gets the owner profile from an account
   @spec get_profile_for_account!(Account.t()) :: OwnerProfile.t() | Ecto.NoResultsError
   defp get_profile_for_account!(%Account{id: id} = _account) do
@@ -211,5 +273,35 @@ defmodule Management.JobManager.API do
       where: profile.account_id == ^id
     )
     |> Repo.one!()
+  end
+
+  @spec jobs_query(job_query :: Ecto.Query.t(), filters :: %{binary() => binary()} | %{}) ::
+          Ecto.Query.t()
+  defp jobs_query(job_query, filters) do
+    status = Map.get(filters, "status", "In Progress")
+    payment_status = Map.get(filters, "payment_status", "Pending")
+    done_by = Map.get(filters, "done_by", nil)
+
+    if is_nil(done_by) do
+      from(
+        job in job_query,
+        where: job.status == ^status and job.payment_status == ^payment_status
+      )
+    else
+      writer_profile =
+        from(
+          writer_profile in WriterProfile,
+          where: writer_profile.account_id == ^done_by,
+          select: map(writer_profile, [:id])
+        )
+        |> Repo.one!()
+
+      from(
+        job in job_query,
+        where:
+          job.status == ^status and job.payment_status == ^payment_status and
+            job.writer_profile_id == ^writer_profile.id
+      )
+    end
   end
 end

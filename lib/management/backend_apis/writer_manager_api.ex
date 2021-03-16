@@ -380,7 +380,107 @@ defmodule Management.WriterManager.API do
 
   ## Example
       iex> suspend_writer(Account{} = account, writer_profile_id)
+      {:ok, %OwnerProfile{}}
+      iex> suspend_writer(Account{} = account_of_suspended, writer_profile_id)
+      {:error, reson}
   """
+  @spec suspend_writer(account :: Account.t(), writer_profile_id :: binary()) :: {:ok, OwnerProfile.t()} | {:error, reason()}
+  def suspend_writer(%Account{id: id} = account, writer_profile_id) do
+    {owner_profile, writer_profile} =
+      from(
+        owner_profile in OwnerProfile,
+        where: owner_profile.account_id == ^id,
+        join: writer_profile in WriterProfile,
+        where: writer_profile.id == ^writer_profile_id,
+        select: {owner_profile, writer_profile}
+      )
+      |> Repo.one!one!()
+
+    # owner profile changeset
+    owner_changeset =
+      owner_profile
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_change(:suspended_team_members, [writer_profile_id | owner_profile.suspended_team_members])
+
+    # writer changeset
+    writer_changeset =
+      writer_profile
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_change(:team_suspended_from, [owner_profile.id | writer_profile.teams_suspended_from])
+
+    # update the db
+    Multi.new()
+    |> Multi.update(:owner, owner_changeset)
+    |> Multi.update(:writer, writer_changeset)
+    |> Repo.transaction()
+    |> case  do
+      {:ok, %{owner: %OwnerProfile{} = profile}} ->
+        {:ok, profile}
+
+      {:error, _, _, _} ->
+        {:error, "Error! Writer could not be suspended."}
+    end
+
+  rescue
+    Ecto.NoResultsError ->
+      {:error, "Error! Writer Account could not be found."}
+  end
+
+  @doc """
+  Unsuspends a writer.
+
+   ## Example
+      iex> unsuspend_writer(Account{} = account, writer_profile_id)
+      {:ok, %OwnerProfile{}}
+      iex> unsuspend_writer(Account{} = account_of_suspended, writer_profile_id)
+      {:error, reson}
+  """
+  @spec unsuspend_writer(account :: Account.t(), writer_profile_id :: binary()) :: {:ok, OwnerProfile.t()} | {:error, reason()}
+  def unsuspend_writer(%Account{id: id} = account, writer_profile_id) do
+    {owner_profile, writer_profile} =
+      from(
+        owner_profile in OwnerProfile,
+        where: owner_profile.account_id == ^id,
+        join: writer_profile in WriterProfile,
+        where: writer_profile.id == ^writer_profile_id,
+        select: {owner_profile, writer_profile}
+      )
+      |> Repo.one!one!()
+
+    # owner profile changeset
+    owner_changeset =
+      owner_profile
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_change(
+        :suspended_team_members,
+        List.delete(owner_profile.suspended_team_members, writer_profile_id)
+      )
+
+    # writer changeset
+    writer_changeset =
+      writer_profile
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_change(
+        :team_suspended_from,
+        List.delete(writer_profile.teams_suspended_from, owner_profile.id)
+      )
+
+    # update the db
+    Multi.new()
+    |> Multi.update(:owner, owner_changeset)
+    |> Multi.update(:writer, writer_changeset)
+    |> Repo.transaction()
+    |> case  do
+      {:ok, %{owner: %OwnerProfile{} = profile}} ->
+        {:ok, profile}
+
+      {:error, _, _, _} ->
+        {:error, "Error! Writer could not be unsuspended."}
+    end
+
+  rescue
+    Ecto.NoResultsError ->
+      {:error, "Error! Writer Account could not be found."}
 
   #############################################################################################
   #################################### PRIVATE FUNCTIONS ######################################

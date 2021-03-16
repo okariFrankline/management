@@ -26,7 +26,7 @@ defmodule Management.JobManager.Job do
     # defaults to pending
     field :payment_status, :string
     # indicates the status of whether the job has been picked,
-    # "In Progress", "Late" or "Completed"
+    # "In Progress", "Late" or "Completed", "Unpicked"
     # defaults to "Pending"
     field :status, :string
     field :subject, :string

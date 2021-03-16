@@ -20,6 +20,9 @@ defmodule Management.WriterManager.WriterProfile do
     # holds the ids of all the accounts that this writer belongs to
     # added upon accepting join invitations
     field :team_memberships, {:array, :binary_id}
+    # holds the ids from which this writer has been suspended from
+    # defaults to an empty array
+    field :teams_suspended_from, {:array, :binary_id}
     # subscription information
     field(:sub_expiry_date, :naive_datetime)
     field(:sub_start_date, :naive_datetime)
