@@ -1,0 +1,38 @@
+<h2><%= @title %></h2>
+
+<%= f = form_for @changeset, "#",
+  id: "owner-form",
+  phx_target: @myself,
+  phx_change: "validate",
+  phx_submit: "save" %>
+
+  <%= label f, :full_name %>
+  <%= text_input f, :full_name %>
+  <%= error_tag f, :full_name %>
+
+  <%= label f, :subscription_package %>
+  <%= text_input f, :subscription_package %>
+  <%= error_tag f, :subscription_package %>
+
+  <%= label f, :sub_start_date %>
+  <%= datetime_select f, :sub_start_date %>
+  <%= error_tag f, :sub_start_date %>
+
+  <%= label f, :sub_expiry_date %>
+  <%= datetime_select f, :sub_expiry_date %>
+  <%= error_tag f, :sub_expiry_date %>
+
+  <%= label f, :owner_image %>
+  <%= text_input f, :owner_image %>
+  <%= error_tag f, :owner_image %>
+
+  <%= label f, :phone_numbers %>
+  <%= multiple_select f, :phone_numbers, ["Option 1": "option1", "Option 2": "option2"] %>
+  <%= error_tag f, :phone_numbers %>
+
+  <%= label f, :sub_is_active %>
+  <%= checkbox f, :sub_is_active %>
+  <%= error_tag f, :sub_is_active %>
+
+  <%= submit "Save", phx_disable_with: "Saving..." %>
+</form>

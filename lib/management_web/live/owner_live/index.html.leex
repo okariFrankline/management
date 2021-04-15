@@ -1,0 +1,47 @@
+<h1>Listing Owners</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, ManagementWeb.OwnerLive.FormComponent,
+    id: @owner.id || :new,
+    title: @page_title,
+    action: @live_action,
+    owner: @owner,
+    return_to: Routes.owner_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Full name</th>
+      <th>Subscription package</th>
+      <th>Sub start date</th>
+      <th>Sub expiry date</th>
+      <th>Owner image</th>
+      <th>Phone numbers</th>
+      <th>Sub is active</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="owners">
+    <%= for owner <- @owners do %>
+      <tr id="owner-<%= owner.id %>">
+        <td><%= owner.full_name %></td>
+        <td><%= owner.subscription_package %></td>
+        <td><%= owner.sub_start_date %></td>
+        <td><%= owner.sub_expiry_date %></td>
+        <td><%= owner.owner_image %></td>
+        <td><%= owner.phone_numbers %></td>
+        <td><%= owner.sub_is_active %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.owner_show_path(@socket, :show, owner) %></span>
+          <span><%= live_patch "Edit", to: Routes.owner_index_path(@socket, :edit, owner) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: owner.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Owner", to: Routes.owner_index_path(@socket, :new) %></span>

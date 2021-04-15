@@ -1,0 +1,12 @@
+<h1>Register Account</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_component @socket, ManagementWeb.AccountLive.FormComponent,
+    id: @account.id || :new,
+    title: @page_title,
+    action: @live_action,
+    account: @account,
+    return_to: Routes.account_index_path(@socket, :index) %>
+<% end %>
+
+<span><%= live_patch "New Account", to: Routes.account_index_path(@socket, :new) %></span>

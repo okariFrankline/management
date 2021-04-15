@@ -1,0 +1,57 @@
+<h1>Show Writer profile</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, ManagementWeb.WriterProfileLive.FormComponent,
+    id: @writer_profile.id,
+    title: @page_title,
+    action: @live_action,
+    writer_profile: @writer_profile,
+    return_to: Routes.writer_profile_show_path(@socket, :show, @writer_profile) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>First name:</strong>
+    <%= @writer_profile.first_name %>
+  </li>
+
+  <li>
+    <strong>Last name:</strong>
+    <%= @writer_profile.last_name %>
+  </li>
+
+  <li>
+    <strong>Gender:</strong>
+    <%= @writer_profile.gender %>
+  </li>
+
+  <li>
+    <strong>Suscription type:</strong>
+    <%= @writer_profile.suscription_type %>
+  </li>
+
+  <li>
+    <strong>Profile image:</strong>
+    <%= @writer_profile.profile_image %>
+  </li>
+
+  <li>
+    <strong>Sub expiry date:</strong>
+    <%= @writer_profile.sub_expiry_date %>
+  </li>
+
+  <li>
+    <strong>Sub start date:</strong>
+    <%= @writer_profile.sub_start_date %>
+  </li>
+
+  <li>
+    <strong>Full name:</strong>
+    <%= @writer_profile.full_name %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.writer_profile_show_path(@socket, :edit, @writer_profile), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.writer_profile_index_path(@socket, :index) %></span>

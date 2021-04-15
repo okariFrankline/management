@@ -65,6 +65,9 @@ config :management, ManagementWeb.Endpoint,
     ]
   ]
 
+# bamboo configuration
+config :management, Management.Mailer, Bamboo.LocalAdapter
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 

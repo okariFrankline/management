@@ -9,6 +9,40 @@ defmodule Management.AccountManager do
   alias Management.AccountManager.Account
 
   @doc """
+  Gets an account by email.
+
+  ## Examples
+
+      iex> get_account_by_email("foo@example.com")
+      %User{}
+
+      iex> get_account_by_email("unknown@example.com")
+      nil
+
+  """
+  def get_account_by_email(email) when is_binary(email) do
+    Repo.get_by(Account, email: email)
+  end
+
+  @doc """
+  Gets a user by email and password.
+
+  ## Examples
+
+      iex> get_user_by_email_and_password("foo@example.com", "correct_password")
+      %User{}
+
+      iex> get_user_by_email_and_password("foo@example.com", "invalid_password")
+      nil
+
+  """
+  def get_account_by_email_and_password(email, password)
+      when is_binary(email) and is_binary(password) do
+    account = Repo.get_by(Account, email: email)
+    if Account.valid_password?(account, password), do: account
+  end
+
+  @doc """
   Returns the list of accounts.
 
   ## Examples
@@ -51,7 +85,7 @@ defmodule Management.AccountManager do
   """
   def create_account(attrs \\ %{}) do
     %Account{}
-    |> Account.changeset(attrs)
+    |> Account.creation_changeset(attrs)
     |> Repo.insert()
   end
 

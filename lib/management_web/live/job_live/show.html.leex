@@ -1,0 +1,67 @@
+<h1>Show Job</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, ManagementWeb.JobLive.FormComponent,
+    id: @job.id,
+    title: @page_title,
+    action: @live_action,
+    job: @job,
+    return_to: Routes.job_show_path(@socket, :show, @job) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @job.description %>
+  </li>
+
+  <li>
+    <strong>Status:</strong>
+    <%= @job.status %>
+  </li>
+
+  <li>
+    <strong>Is submitted:</strong>
+    <%= @job.is_submitted %>
+  </li>
+
+  <li>
+    <strong>Deadline:</strong>
+    <%= @job.deadline %>
+  </li>
+
+  <li>
+    <strong>Contains corrections:</strong>
+    <%= @job.contains_corrections %>
+  </li>
+
+  <li>
+    <strong>Payment status:</strong>
+    <%= @job.payment_status %>
+  </li>
+
+  <li>
+    <strong>Done by:</strong>
+    <%= @job.done_by %>
+  </li>
+
+  <li>
+    <strong>Visibility:</strong>
+    <%= @job.visibility %>
+  </li>
+
+  <li>
+    <strong>Subject:</strong>
+    <%= @job.subject %>
+  </li>
+
+  <li>
+    <strong>Attachments:</strong>
+    <%= @job.attachments %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.job_show_path(@socket, :edit, @job), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.job_index_path(@socket, :index) %></span>

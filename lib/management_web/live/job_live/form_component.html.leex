@@ -1,0 +1,50 @@
+<h2><%= @title %></h2>
+
+<%= f = form_for @changeset, "#",
+  id: "job-form",
+  phx_target: @myself,
+  phx_change: "validate",
+  phx_submit: "save" %>
+
+  <%= label f, :description %>
+  <%= text_input f, :description %>
+  <%= error_tag f, :description %>
+
+  <%= label f, :status %>
+  <%= text_input f, :status %>
+  <%= error_tag f, :status %>
+
+  <%= label f, :is_submitted %>
+  <%= checkbox f, :is_submitted %>
+  <%= error_tag f, :is_submitted %>
+
+  <%= label f, :deadline %>
+  <%= date_select f, :deadline %>
+  <%= error_tag f, :deadline %>
+
+  <%= label f, :contains_corrections %>
+  <%= checkbox f, :contains_corrections %>
+  <%= error_tag f, :contains_corrections %>
+
+  <%= label f, :payment_status %>
+  <%= text_input f, :payment_status %>
+  <%= error_tag f, :payment_status %>
+
+  <%= label f, :done_by %>
+  <%= text_input f, :done_by %>
+  <%= error_tag f, :done_by %>
+
+  <%= label f, :visibility %>
+  <%= text_input f, :visibility %>
+  <%= error_tag f, :visibility %>
+
+  <%= label f, :subject %>
+  <%= text_input f, :subject %>
+  <%= error_tag f, :subject %>
+
+  <%= label f, :attachments %>
+  <%= multiple_select f, :attachments, ["Option 1": "option1", "Option 2": "option2"] %>
+  <%= error_tag f, :attachments %>
+
+  <%= submit "Save", phx_disable_with: "Saving..." %>
+</form>

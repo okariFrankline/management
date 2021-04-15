@@ -19,6 +19,8 @@ defmodule Management.DataCase do
   using do
     quote do
       alias Management.Repo
+      alias Management.Factory
+      alias Ecto.Changeset
 
       import Ecto
       import Ecto.Changeset
